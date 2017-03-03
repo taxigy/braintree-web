@@ -329,7 +329,11 @@ function HostedFields(options) {
 
     field = options.fields[key];
 
-    container = document.querySelector(field.selector);
+    if (field instanceof Element) {
+      container = field;
+    } else {
+      container = document.querySelector(field.selector);
+    }
 
     if (!container) {
       throw new BraintreeError({

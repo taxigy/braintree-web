@@ -41,6 +41,38 @@ describe('hostedFields', function () {
       frameReadyHandler(function () {});
     });
 
+    it('instantiates a Hosted Fields integration with "field" set to instance of Element', function (done) {
+      var i, frameReadyHandler;
+      var cvvNode = document.createElement('div');
+
+      // cvvNode.id = 'cvv';
+      document.body.appendChild(cvvNode);
+
+      hostedFields.create({
+        client: {
+          getConfiguration: fake.configuration,
+          _request: function () {}
+        },
+        fields: {
+          cvv: cvvNode
+        }
+      }, function (err, thingy) {
+        expect(err).not.to.exist;
+        expect(thingy).to.be.an.instanceof(HostedFields);
+
+        done();
+      });
+
+      for (i = 0; i < Bus.prototype.on.callCount; i++) {
+        if (Bus.prototype.on.getCall(0).args[0] === events.FRAME_READY) {
+          frameReadyHandler = Bus.prototype.on.getCall(0).args[1];
+          break;
+        }
+      }
+
+      frameReadyHandler(function () {});
+    });
+
     it('throws an error if called without a callback', function () {
       var err;
       var cvvNode = document.createElement('div');
